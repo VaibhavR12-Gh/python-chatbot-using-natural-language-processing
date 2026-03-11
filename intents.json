@@ -1,0 +1,206 @@
+{
+  "intents": [
+    {
+      "tag": "greeting",
+      "patterns": [
+        "hello", "hi", "hey", "good morning", "good afternoon", "good evening",
+        "howdy", "what's up", "sup", "greetings", "hi there", "hello there"
+      ],
+      "responses": [
+        "Hello! How can I assist you today?",
+        "Hey there! What can I help you with?",
+        "Hi! Great to hear from you. What do you need?",
+        "Greetings! I'm here and ready to help."
+      ]
+    },
+    {
+      "tag": "goodbye",
+      "patterns": [
+        "bye", "goodbye", "see you", "see ya", "later", "take care",
+        "cya", "farewell", "good night", "talk later", "i'm leaving"
+      ],
+      "responses": [
+        "Goodbye! Have a wonderful day!",
+        "See you later! Take care!",
+        "Farewell! Come back anytime you need help.",
+        "Bye! It was great chatting with you!"
+      ]
+    },
+    {
+      "tag": "thanks",
+      "patterns": [
+        "thanks", "thank you", "thank you so much", "thanks a lot",
+        "many thanks", "much appreciated", "cheers", "thx", "ty"
+      ],
+      "responses": [
+        "You're welcome! Happy to help.",
+        "Anytime! That's what I'm here for.",
+        "Glad I could help! Let me know if you need anything else.",
+        "No problem at all!"
+      ]
+    },
+    {
+      "tag": "name",
+      "patterns": [
+        "what is your name", "who are you", "what are you called",
+        "tell me your name", "what should i call you", "do you have a name"
+      ],
+      "responses": [
+        "I'm PyBot, your friendly NLP-powered assistant!",
+        "My name is PyBot — built with Python NLP from scratch!",
+        "You can call me PyBot. Nice to meet you!"
+      ]
+    },
+    {
+      "tag": "age",
+      "patterns": [
+        "how old are you", "what is your age", "when were you created",
+        "when were you born", "how long have you existed"
+      ],
+      "responses": [
+        "I was created just for this project — so I'm brand new!",
+        "Age is just a number, and mine is very small since I'm a fresh chatbot.",
+        "I'm a timeless AI — I don't really age!"
+      ]
+    },
+    {
+      "tag": "weather",
+      "patterns": [
+        "what's the weather", "how is the weather today", "is it raining",
+        "weather forecast", "will it snow", "temperature outside",
+        "is it hot today", "is it cold outside", "what's the climate like"
+      ],
+      "responses": [
+        "I can't fetch live weather data, but you can check weather.com or a weather app!",
+        "For real-time weather updates, try searching 'weather + your city' on Google.",
+        "I'm not connected to live data yet, but a quick web search will give you accurate forecasts!"
+      ]
+    },
+    {
+      "tag": "help",
+      "patterns": [
+        "help", "i need help", "can you help me", "what can you do",
+        "what are your features", "what do you know", "how does this work",
+        "what can you assist with", "show me what you can do"
+      ],
+      "responses": [
+        "I can chat, answer questions, tell jokes, explain NLP concepts, and more! Just ask.",
+        "I'm here to help! You can ask me about NLP, Python, tell me to joke around, or just chat.",
+        "Ask me anything — I'll do my best to respond intelligently using NLP!"
+      ]
+    },
+    {
+      "tag": "joke",
+      "patterns": [
+        "tell me a joke", "make me laugh", "say something funny",
+        "do you know any jokes", "joke", "humor me", "be funny"
+      ],
+      "responses": [
+        "Why do programmers prefer dark mode? Because light attracts bugs! 🐛",
+        "Why was the JavaScript developer sad? Because he didn't know how to 'null' his feelings.",
+        "I told my computer I needed a break. Now it won't stop sending me Kit-Kat ads.",
+        "Why did the Python developer go broke? Because he used all his cache!"
+      ]
+    },
+    {
+      "tag": "nlp",
+      "patterns": [
+        "what is nlp", "explain nlp", "what is natural language processing",
+        "how does nlp work", "nlp definition", "tell me about nlp",
+        "what can nlp do", "nlp applications"
+      ],
+      "responses": [
+        "NLP (Natural Language Processing) is AI that enables computers to understand, interpret, and generate human language. It powers chatbots, translation, sentiment analysis, and more!",
+        "Natural Language Processing combines linguistics and machine learning to help computers understand text and speech. Key tasks include tokenization, POS tagging, NER, and sentiment analysis.",
+        "NLP is the bridge between human language and computers. Techniques like TF-IDF, word embeddings, and transformers help machines 'understand' what we mean!"
+      ]
+    },
+    {
+      "tag": "python",
+      "patterns": [
+        "what is python", "tell me about python", "python programming",
+        "why use python", "python language", "is python good",
+        "python for ai", "python for machine learning"
+      ],
+      "responses": [
+        "Python is a versatile, beginner-friendly programming language beloved for AI, data science, web dev, and automation. Libraries like NumPy, Pandas, and TensorFlow make it a powerhouse!",
+        "Python is the #1 language for AI and ML. Its clean syntax, huge community, and rich ecosystem (scikit-learn, PyTorch, etc.) make it ideal for NLP projects like this one!",
+        "Python powers much of modern AI. Easy to learn, powerful to use — it's the go-to language for NLP, data analysis, and building chatbots!"
+      ]
+    },
+    {
+      "tag": "machine_learning",
+      "patterns": [
+        "what is machine learning", "explain machine learning", "tell me about ml",
+        "how does machine learning work", "difference between ai and ml",
+        "machine learning definition", "types of machine learning"
+      ],
+      "responses": [
+        "Machine Learning is a subset of AI where algorithms learn patterns from data without being explicitly programmed. Types include supervised, unsupervised, and reinforcement learning.",
+        "ML allows systems to automatically improve from experience. It's used in spam filters, recommendation systems, image recognition, and of course — NLP chatbots!",
+        "Machine Learning = algorithms that learn from data. The 3 main types are: Supervised (labeled data), Unsupervised (find hidden patterns), and Reinforcement (learn by reward/penalty)."
+      ]
+    },
+    {
+      "tag": "sentiment",
+      "patterns": [
+        "what is sentiment analysis", "explain sentiment analysis",
+        "how does sentiment analysis work", "positive negative sentiment",
+        "opinion mining", "text sentiment"
+      ],
+      "responses": [
+        "Sentiment analysis determines the emotional tone in text — positive, negative, or neutral. It's used in product reviews, social media monitoring, and customer feedback analysis!",
+        "Sentiment analysis is an NLP technique that identifies opinions and emotions in text. Businesses use it to gauge customer satisfaction and brand perception.",
+        "Opinion mining (sentiment analysis) uses NLP to classify text as positive, negative, or neutral. It works by analyzing word polarity and context."
+      ]
+    },
+    {
+      "tag": "tokenization",
+      "patterns": [
+        "what is tokenization", "explain tokenization", "how tokenization works",
+        "what are tokens", "word tokenization", "sentence tokenization"
+      ],
+      "responses": [
+        "Tokenization splits text into smaller units called tokens — usually words or subwords. For example: 'Hello world' → ['Hello', 'world']. It's the first step in NLP pipelines!",
+        "Tokenization is breaking text into tokens (words, phrases, or characters). Word tokenization splits by spaces/punctuation; subword tokenization (used in BERT) handles unknown words better.",
+        "Tokens are the building blocks of NLP. Tokenization converts raw text into a list of tokens that algorithms can process. This very chatbot uses tokenization to understand you!"
+      ]
+    },
+    {
+      "tag": "tfidf",
+      "patterns": [
+        "what is tfidf", "explain tfidf", "tf idf definition",
+        "term frequency inverse document frequency", "how tfidf works",
+        "what does tfidf measure"
+      ],
+      "responses": [
+        "TF-IDF (Term Frequency–Inverse Document Frequency) measures word importance. TF counts how often a word appears; IDF penalizes common words. Together they score word relevance in documents!",
+        "TF-IDF is a numerical statistic used in text mining. High TF-IDF = word is frequent in this doc but rare overall. It's the backbone of search engines and this very chatbot!",
+        "TF-IDF helps find the most meaningful words in a document. Formula: TF(t,d) × IDF(t,D). Words like 'the' get low scores; specific terms like 'tokenization' get high scores."
+      ]
+    },
+    {
+      "tag": "how_built",
+      "patterns": [
+        "how were you built", "how do you work", "what technology powers you",
+        "what algorithm do you use", "how are you made", "your architecture",
+        "what nlp techniques do you use", "explain your internals"
+      ],
+      "responses": [
+        "I'm built with pure Python (no ML libraries needed!). My pipeline: 1) Tokenize your input, 2) Remove stop words, 3) Apply stemming, 4) Compute TF-IDF vectors, 5) Find closest intent via cosine similarity!",
+        "My NLP pipeline: Tokenization → Lowercasing → Stop Word Removal → Stemming → TF-IDF Vectorization → Cosine Similarity matching. All implemented from scratch using only Python + NumPy!",
+        "I use a TF-IDF + Cosine Similarity approach. Your message gets vectorized and compared against all training patterns. The intent with the highest similarity score wins!"
+      ]
+    },
+    {
+      "tag": "fallback",
+      "patterns": [],
+      "responses": [
+        "I'm not sure I understand. Could you rephrase that?",
+        "Hmm, that's a bit outside my training data. Try asking something else!",
+        "I didn't quite catch that. Ask me about NLP, Python, or just say hello!",
+        "I'm still learning! That one stumped me. Try rephrasing?"
+      ]
+    }
+  ]
+}

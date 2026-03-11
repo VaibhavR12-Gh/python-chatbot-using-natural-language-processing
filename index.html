@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PyBot — NLP Chatbot</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:         #0a0c10;
+      --bg2:        #0f1218;
+      --bg3:        #161b24;
+      --border:     #1e2736;
+      --border2:    #263040;
+      --text:       #c9d4e8;
+      --text-dim:   #5a6a88;
+      --text-muted: #3a4a64;
+      --accent:     #3d9bff;
+      --accent2:    #00e5c0;
+      --accent3:    #ff6b9d;
+      --user-bg:    #1a2540;
+      --bot-bg:     #111720;
+      --glow:       0 0 24px rgba(61,155,255,0.15);
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+    }
+
+    /* ── LAYOUT ────────────────────────── */
+    .shell {
+      display: flex;
+      height: 100vh;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* ── SIDEBAR ───────────────────────── */
+    .sidebar {
+      width: 280px;
+      min-width: 280px;
+      background: var(--bg2);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .sidebar-header {
+      padding: 28px 24px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      box-shadow: var(--glow);
+    }
+
+    .logo-name {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .logo-sub {
+      font-size: 11px;
+      color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.5px;
+    }
+
+    .sidebar-section {
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar-section h3 {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .stat-value {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .stat-value.highlight { color: var(--accent2); }
+
+    /* Confidence bar */
+    .confidence-bar {
+      width: 100%;
+      height: 4px;
+      background: var(--border2);
+      border-radius: 2px;
+      margin-top: 4px;
+      overflow: hidden;
+    }
+
+    .confidence-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+    }
+
+    /* Intent badges */
+    .intent-list { display: flex; flex-direction: column; gap: 6px; }
+
+    .intent-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+    }
+
+    .intent-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .intent-name {
+      font-size: 11px;
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      flex: 1;
+    }
+
+    .intent-score {
+      font-size: 10px;
+      color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .sidebar-actions {
+      margin-top: auto;
+      padding: 20px 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .btn-secondary {
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border2);
+      background: transparent;
+      color: var(--text-dim);
+      font-size: 12px;
+      font-family: 'Space Grotesk', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(61,155,255,0.06);
+    }
+
+    .debug-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border2);
+      background: transparent;
+      color: var(--text-dim);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .debug-toggle:hover { border-color: var(--accent3); color: var(--accent3); }
+    .debug-toggle.active {
+      border-color: var(--accent3);
+      color: var(--accent3);
+      background: rgba(255,107,157,0.06);
+    }
+
+    .toggle-pill {
+      width: 28px;
+      height: 16px;
+      background: var(--border2);
+      border-radius: 8px;
+      position: relative;
+      transition: background 0.2s;
+    }
+
+    .debug-toggle.active .toggle-pill { background: var(--accent3); }
+
+    .toggle-pill::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 12px;
+      height: 12px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.2s;
+    }
+
+    .debug-toggle.active .toggle-pill::after { transform: translateX(12px); }
+
+    /* ── MAIN CHAT AREA ─────────────────── */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .chat-header {
+      padding: 20px 28px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg2);
+    }
+
+    .chat-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--accent2);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent2);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(0.85); }
+    }
+
+    /* ── MESSAGES ───────────────────────── */
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      scroll-behavior: smooth;
+    }
+
+    .messages::-webkit-scrollbar { width: 4px; }
+    .messages::-webkit-scrollbar-track { background: transparent; }
+    .messages::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+    .msg {
+      display: flex;
+      flex-direction: column;
+      max-width: 72%;
+      animation: msgIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes msgIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .msg.user { align-self: flex-end; align-items: flex-end; }
+    .msg.bot  { align-self: flex-start; align-items: flex-start; }
+
+    .msg-bubble {
+      padding: 12px 16px;
+      border-radius: 16px;
+      font-size: 14px;
+      line-height: 1.6;
+      position: relative;
+    }
+
+    .msg.user .msg-bubble {
+      background: var(--user-bg);
+      border: 1px solid rgba(61,155,255,0.2);
+      border-bottom-right-radius: 4px;
+      color: var(--text);
+    }
+
+    .msg.bot .msg-bubble {
+      background: var(--bot-bg);
+      border: 1px solid var(--border);
+      border-bottom-left-radius: 4px;
+    }
+
+    .msg-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 5px;
+      font-size: 10px;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .intent-tag {
+      background: rgba(61,155,255,0.1);
+      border: 1px solid rgba(61,155,255,0.2);
+      color: var(--accent);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+    }
+
+    .conf-tag {
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+    }
+
+    .conf-high { background: rgba(0,229,192,0.1); color: var(--accent2); }
+    .conf-mid  { background: rgba(255,193,7,0.1);  color: #ffc107; }
+    .conf-low  { background: rgba(255,107,157,0.1); color: var(--accent3); }
+
+    /* Debug panel */
+    .debug-panel {
+      margin-top: 8px;
+      padding: 12px 14px;
+      background: rgba(22,27,36,0.8);
+      border: 1px solid rgba(255,107,157,0.2);
+      border-radius: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--text-dim);
+      max-width: 480px;
+      display: none;
+    }
+
+    .debug-panel.show { display: block; }
+
+    .debug-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .debug-key { color: var(--accent3); min-width: 72px; }
+    .debug-val { color: var(--text-dim); flex: 1; word-break: break-all; }
+
+    .debug-scores { margin-top: 8px; }
+
+    .score-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 3px;
+    }
+
+    .score-bar-label { min-width: 100px; font-size: 9px; color: var(--text-dim); }
+    .score-bar-track { flex: 1; height: 3px; background: var(--border2); border-radius: 2px; }
+    .score-bar-fill  { height: 100%; background: var(--accent3); border-radius: 2px; transition: width 0.3s; }
+    .score-bar-num   { font-size: 9px; color: var(--text-muted); min-width: 36px; text-align: right; }
+
+    /* Typing indicator */
+    .typing {
+      display: none;
+      align-self: flex-start;
+      padding: 12px 16px;
+      background: var(--bot-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      border-bottom-left-radius: 4px;
+      gap: 5px;
+    }
+
+    .typing.show { display: flex; animation: msgIn 0.2s ease; }
+
+    .typing-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--text-muted);
+      border-radius: 50%;
+      animation: typingBounce 1.2s infinite;
+    }
+
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typingBounce {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+      30% { transform: translateY(-5px); opacity: 1; }
+    }
+
+    /* Welcome message */
+    .welcome {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-dim);
+    }
+
+    .welcome-icon {
+      font-size: 42px;
+      margin-bottom: 16px;
+      filter: drop-shadow(0 0 20px rgba(61,155,255,0.4));
+    }
+
+    .welcome h2 {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .welcome p {
+      font-size: 13px;
+      max-width: 320px;
+      margin: 0 auto 20px;
+      line-height: 1.6;
+    }
+
+    .suggestion-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 12px;
+    }
+
+    .chip {
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: 1px solid var(--border2);
+      font-size: 12px;
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--bg3);
+    }
+
+    .chip:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(61,155,255,0.06);
+      transform: translateY(-1px);
+    }
+
+    /* ── INPUT AREA ─────────────────────── */
+    .input-area {
+      padding: 20px 28px;
+      border-top: 1px solid var(--border);
+      background: var(--bg2);
+    }
+
+    .input-row {
+      display: flex;
+      gap: 12px;
+      align-items: flex-end;
+    }
+
+    .input-wrap {
+      flex: 1;
+      position: relative;
+    }
+
+    .input-box {
+      width: 100%;
+      padding: 13px 16px;
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      border-radius: 12px;
+      color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      resize: none;
+      line-height: 1.5;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+
+    .input-box:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(61,155,255,0.08);
+    }
+
+    .input-box::placeholder { color: var(--text-muted); }
+
+    .send-btn {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.15s, opacity 0.15s;
+      flex-shrink: 0;
+      box-shadow: var(--glow);
+    }
+
+    .send-btn:hover { transform: scale(1.05); }
+    .send-btn:active { transform: scale(0.97); }
+    .send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    .send-btn svg { width: 18px; height: 18px; fill: white; }
+
+    .input-hint {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 8px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* ── ENTITY HIGHLIGHTING ─────────────── */
+    .entity-badge {
+      display: inline-block;
+      padding: 0 5px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      margin-left: 3px;
+      vertical-align: middle;
+    }
+
+    .entities-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 6px;
+    }
+
+    .entity-item {
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .entity-EMAIL  { background: rgba(61,155,255,0.1); color: var(--accent); border: 1px solid rgba(61,155,255,0.2); }
+    .entity-URL    { background: rgba(0,229,192,0.1);  color: var(--accent2); border: 1px solid rgba(0,229,192,0.2); }
+    .entity-NUMBER { background: rgba(255,193,7,0.1);  color: #ffc107; border: 1px solid rgba(255,193,7,0.2); }
+    .entity-DATE   { background: rgba(255,107,157,0.1);color: var(--accent3); border: 1px solid rgba(255,107,157,0.2); }
+    .entity-CAPS   { background: rgba(150,100,255,0.1);color: #a78bfa; border: 1px solid rgba(150,100,255,0.2); }
+
+    /* ── RESPONSIVE ─────────────────────── */
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <div class="logo-icon">🤖</div>
+        <span class="logo-name">PyBot</span>
+      </div>
+      <div class="logo-sub">NLP · TF-IDF · Cosine Sim</div>
+    </div>
+
+    <!-- Stats -->
+    <div class="sidebar-section">
+      <h3>Session Stats</h3>
+      <div class="stat-row">
+        <span class="stat-label">turns</span>
+        <span class="stat-value highlight" id="stat-turns">0</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">avg confidence</span>
+        <span class="stat-value" id="stat-conf">—</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">avg response</span>
+        <span class="stat-value" id="stat-time">—</span>
+      </div>
+      <div style="margin-top:8px">
+        <span class="stat-label" style="font-size:10px">last confidence</span>
+        <div class="confidence-bar" style="margin-top:6px">
+          <div class="confidence-fill" id="conf-bar" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Last Intent -->
+    <div class="sidebar-section">
+      <h3>Last Intent</h3>
+      <div class="intent-list" id="intent-list">
+        <div class="stat-label" style="font-size:11px">Ask something to see scores</div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="sidebar-actions">
+      <button class="debug-toggle" id="debug-btn" onclick="toggleDebug()">
+        <span>Debug Mode</span>
+        <div class="toggle-pill"></div>
+      </button>
+      <button class="btn-secondary" onclick="resetChat()">🗑 Clear conversation</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="chat-header">
+      <span class="chat-title">Chat with PyBot</span>
+      <div class="status-pill">
+        <div class="status-dot"></div>
+        <span>online</span>
+      </div>
+    </div>
+
+    <div class="messages" id="messages">
+      <div class="welcome" id="welcome-msg">
+        <div class="welcome-icon">🧠</div>
+        <h2>Hello! I'm PyBot</h2>
+        <p>An NLP chatbot built from scratch in Python using TF-IDF vectorization and Cosine Similarity.</p>
+        <div class="suggestion-chips">
+          <div class="chip" onclick="sendChip('What is NLP?')">What is NLP?</div>
+          <div class="chip" onclick="sendChip('How do you work?')">How do you work?</div>
+          <div class="chip" onclick="sendChip('Tell me a joke')">Tell me a joke 😄</div>
+          <div class="chip" onclick="sendChip('What is TF-IDF?')">What is TF-IDF?</div>
+          <div class="chip" onclick="sendChip('Hello!')">Say hello</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="typing" id="typing">
+      <div class="typing-dot"></div>
+      <div class="typing-dot"></div>
+      <div class="typing-dot"></div>
+    </div>
+
+    <div class="input-area">
+      <div class="input-row">
+        <div class="input-wrap">
+          <textarea
+            id="msg-input"
+            class="input-box"
+            placeholder="Type a message... (Enter to send)"
+            rows="1"
+            autofocus
+          ></textarea>
+        </div>
+        <button class="send-btn" id="send-btn" onclick="sendMessage()">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+          </svg>
+        </button>
+      </div>
+      <div class="input-hint">Enter to send · Shift+Enter for new line · Type <strong>help</strong> for commands</div>
+    </div>
+  </main>
+</div>
+
+<script>
+  // ── State ────────────────────────────────────────────
+  let debugMode = false;
+  let sessionTurns = 0;
+  let totalConf = 0;
+  let totalTime = 0;
+
+  // ── Auto-resize textarea ─────────────────────────────
+  const input = document.getElementById('msg-input');
+  input.addEventListener('input', () => {
+    input.style.height = 'auto';
+    input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+  });
+
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  // ── Send message ─────────────────────────────────────
+  async function sendMessage(text) {
+    const msg = (text || input.value).trim();
+    if (!msg) return;
+
+    // Hide welcome
+    const welcome = document.getElementById('welcome-msg');
+    if (welcome) welcome.remove();
+
+    // Clear input
+    input.value = '';
+    input.style.height = 'auto';
+
+    // Add user bubble
+    appendMessage('user', msg);
+
+    // Show typing
+    const typing = document.getElementById('typing');
+    typing.classList.add('show');
+    scrollToBottom();
+
+    // Disable send
+    const btn = document.getElementById('send-btn');
+    btn.disabled = true;
+
+    try {
+      const res = await fetch('/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: msg, debug: debugMode })
+      });
+
+      const data = await res.json();
+
+      typing.classList.remove('show');
+      btn.disabled = false;
+
+      if (data.error) {
+        appendMessage('bot', '⚠️ Error: ' + data.error);
+        return;
+      }
+
+      // Add bot response
+      appendMessage('bot', data.response, {
+        tag: data.tag,
+        confidence: data.confidence,
+        time_ms: data.time_ms,
+        entities: data.entities,
+        debug: data.debug
+      });
+
+      // Update sidebar
+      updateStats(data);
+      if (data.debug) updateIntentList(data.debug.top_intents);
+
+    } catch (err) {
+      typing.classList.remove('show');
+      btn.disabled = false;
+      appendMessage('bot', '⚠️ Cannot connect to server. Make sure `python app.py` is running!');
+    }
+
+    scrollToBottom();
+  }
+
+  function sendChip(text) { sendMessage(text); }
+
+  // ── Append message ───────────────────────────────────
+  function appendMessage(role, text, meta) {
+    const container = document.getElementById('messages');
+
+    const msgEl = document.createElement('div');
+    msgEl.className = `msg ${role}`;
+
+    const bubble = document.createElement('div');
+    bubble.className = 'msg-bubble';
+    bubble.textContent = text;
+    msgEl.appendChild(bubble);
+
+    if (meta) {
+      // Meta row
+      const metaEl = document.createElement('div');
+      metaEl.className = 'msg-meta';
+
+      const tag = document.createElement('span');
+      tag.className = 'intent-tag';
+      tag.textContent = meta.tag;
+
+      const conf = document.createElement('span');
+      const confClass = meta.confidence >= 0.5 ? 'conf-high' : meta.confidence >= 0.2 ? 'conf-mid' : 'conf-low';
+      conf.className = `conf-tag ${confClass}`;
+      conf.textContent = (meta.confidence * 100).toFixed(1) + '%';
+
+      const time = document.createElement('span');
+      time.textContent = meta.time_ms + 'ms';
+
+      metaEl.appendChild(tag);
+      metaEl.appendChild(conf);
+      metaEl.appendChild(time);
+      msgEl.appendChild(metaEl);
+
+      // Entities
+      if (meta.entities && Object.keys(meta.entities).length > 0) {
+        const entRow = document.createElement('div');
+        entRow.className = 'entities-row';
+        for (const [type, values] of Object.entries(meta.entities)) {
+          for (const v of values) {
+            const badge = document.createElement('span');
+            badge.className = `entity-item entity-${type}`;
+            badge.textContent = `${type}: ${v}`;
+            entRow.appendChild(badge);
+          }
+        }
+        msgEl.appendChild(entRow);
+      }
+
+      // Debug panel
+      if (debugMode && meta.debug) {
+        const dbg = meta.debug;
+        const panel = document.createElement('div');
+        panel.className = 'debug-panel show';
+
+        panel.innerHTML = `
+          <div class="debug-row"><span class="debug-key">tokens</span><span class="debug-val">[${dbg.tokens.join(', ')}]</span></div>
+          <div class="debug-row"><span class="debug-key">stemmed</span><span class="debug-val">[${dbg.stemmed_tokens.join(', ')}]</span></div>
+          <div class="debug-row"><span class="debug-key">processed</span><span class="debug-val">${dbg.preprocessed}</span></div>
+          <div class="debug-row"><span class="debug-key">best match</span><span class="debug-val">"${dbg.best_pattern}"</span></div>
+          <div class="debug-scores">
+            ${dbg.top_intents.map(([t, s]) => `
+              <div class="score-bar-row">
+                <span class="score-bar-label">${t}</span>
+                <div class="score-bar-track"><div class="score-bar-fill" style="width:${(s*100).toFixed(1)}%"></div></div>
+                <span class="score-bar-num">${s.toFixed(4)}</span>
+              </div>`).join('')}
+          </div>`;
+
+        msgEl.appendChild(panel);
+      }
+    }
+
+    container.appendChild(msgEl);
+  }
+
+  // ── Update sidebar stats ─────────────────────────────
+  function updateStats(data) {
+    sessionTurns++;
+    totalConf += data.confidence;
+    totalTime += data.time_ms;
+
+    document.getElementById('stat-turns').textContent = sessionTurns;
+    document.getElementById('stat-conf').textContent = (totalConf / sessionTurns * 100).toFixed(1) + '%';
+    document.getElementById('stat-time').textContent = (totalTime / sessionTurns).toFixed(1) + 'ms';
+    document.getElementById('conf-bar').style.width = (data.confidence * 100) + '%';
+  }
+
+  function updateIntentList(topIntents) {
+    const list = document.getElementById('intent-list');
+    list.innerHTML = '';
+    topIntents.slice(0, 4).forEach(([tag, score]) => {
+      const item = document.createElement('div');
+      item.className = 'intent-item';
+      item.innerHTML = `
+        <div class="intent-dot"></div>
+        <span class="intent-name">${tag}</span>
+        <span class="intent-score">${(score * 100).toFixed(1)}%</span>`;
+      list.appendChild(item);
+    });
+  }
+
+  // ── Debug toggle ─────────────────────────────────────
+  function toggleDebug() {
+    debugMode = !debugMode;
+    const btn = document.getElementById('debug-btn');
+    btn.classList.toggle('active', debugMode);
+  }
+
+  // ── Reset ────────────────────────────────────────────
+  async function resetChat() {
+    await fetch('/reset', { method: 'POST' });
+    const messages = document.getElementById('messages');
+    messages.innerHTML = '';
+    sessionTurns = 0; totalConf = 0; totalTime = 0;
+    document.getElementById('stat-turns').textContent = '0';
+    document.getElementById('stat-conf').textContent = '—';
+    document.getElementById('stat-time').textContent = '—';
+    document.getElementById('conf-bar').style.width = '0%';
+    document.getElementById('intent-list').innerHTML = '<div class="stat-label" style="font-size:11px">Ask something to see scores</div>';
+
+    // Re-add welcome
+    const welcome = document.createElement('div');
+    welcome.id = 'welcome-msg';
+    welcome.className = 'welcome';
+    welcome.innerHTML = `
+      <div class="welcome-icon">🧠</div>
+      <h2>Conversation Reset</h2>
+      <p>Start a fresh conversation with PyBot!</p>
+      <div class="suggestion-chips">
+        <div class="chip" onclick="sendChip('Hello!')">Say hello</div>
+        <div class="chip" onclick="sendChip('What is NLP?')">What is NLP?</div>
+        <div class="chip" onclick="sendChip('Tell me a joke')">Tell me a joke</div>
+      </div>`;
+    messages.appendChild(welcome);
+  }
+
+  function scrollToBottom() {
+    const messages = document.getElementById('messages');
+    setTimeout(() => { messages.scrollTop = messages.scrollHeight; }, 50);
+  }
+</script>
+</body>
+</html>
